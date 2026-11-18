@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "data": "python ml/generate_data.py && python ml/train.py"
+    "data": "python ml/generate_data.py && python ml/train.py",
+    "deploy": "bash deploy/publish.sh"
   },
   "dependencies": {
     "framer-motion": "^14.14.0",
