@@ -3,7 +3,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 npm run build
-touch dist/.nojekyll
+touch dist/.nojekyll  # vercel.json (from public/) stops Vercel building this branch
 cp dist/index.html dist/404.html
 REMOTE=$(git remote get-url origin)
 cd dist
