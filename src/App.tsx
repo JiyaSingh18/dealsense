@@ -6,9 +6,9 @@ import LiveCall from './pages/LiveCall'
 import ModelPage from './pages/ModelPage'
 
 const TABS = [
-  { id: 'call', label: 'Live call', icon: PhoneCall },
-  { id: 'dashboard', label: 'Manager dashboard', icon: LayoutDashboard },
-  { id: 'model', label: 'Model', icon: Brain },
+  { id: 'call', label: 'Live call', short: 'Live call', icon: PhoneCall },
+  { id: 'dashboard', label: 'Manager dashboard', short: 'Dashboard', icon: LayoutDashboard },
+  { id: 'model', label: 'Model', short: 'Model', icon: Brain },
 ] as const
 type Tab = (typeof TABS)[number]['id']
 const fromHash = (): Tab => {
@@ -40,7 +40,7 @@ export default function App() {
             {TABS.map((t) => (
               <a key={t.id} href={`#/${t.id}`} data-testid={`tab-${t.id}`} className={`relative flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition sm:flex-none ${tab === t.id ? 'text-white' : 'text-slate-400 hover:text-slate-200'}`}>
                 {tab === t.id && <motion.span layoutId="tab" className="absolute inset-0 rounded-lg bg-white/10" transition={{ type: 'spring', stiffness: 400, damping: 32 }} />}
-                <t.icon size={14} className="relative" /><span className="relative">{t.label}</span>
+                <t.icon size={14} className="relative" /><span className="relative hidden sm:inline">{t.label}</span><span className="relative sm:hidden">{t.short}</span>
               </a>
             ))}
           </nav>

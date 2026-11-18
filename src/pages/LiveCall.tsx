@@ -62,7 +62,7 @@ function Typewriter({ text, speed, onDone }: { text: string; speed: number; onDo
 
 export default function LiveCall() {
   const [mode, setMode] = useState<'replay' | 'live'>('replay')
-  const [callId, setCallId] = useState(CALLS[2].id)
+  const [callId, setCallId] = useState('C08')
   const [query, setQuery] = useState('')
   const [lang, setLang] = useState<'All' | 'English' | 'Hinglish'>('All')
   const [shown, setShown] = useState(0)
@@ -126,7 +126,7 @@ export default function LiveCall() {
   return (
     <div className="grid grid-cols-1 gap-4 xl:grid-cols-12">
       {/* ---------------- Library ---------------- */}
-      <aside className="xl:col-span-3">
+      <aside className="order-3 xl:order-none xl:col-span-3">
         <Card title="Call library" icon={<Phone size={14} />} right={<Badge tone="amber">Synthetic</Badge>}>
           <div className="mb-3 flex items-center gap-2 rounded-xl bg-ink-900/80 px-3 py-2 ring-1 ring-white/5 transition focus-within:ring-cyan-400/40">
             <Search size={14} className="text-slate-500" />
@@ -156,7 +156,7 @@ export default function LiveCall() {
       </aside>
 
       {/* ---------------- Player + transcript ---------------- */}
-      <div className="space-y-4 xl:col-span-5">
+      <div className="order-1 min-w-0 space-y-4 xl:order-none xl:col-span-5">
         <Card>
           <div className="mb-4 flex items-center gap-1 rounded-xl bg-ink-900/80 p-1 ring-1 ring-white/5">
             {(['replay', 'live'] as const).map((m) => (
@@ -187,7 +187,7 @@ export default function LiveCall() {
               </div>
               <div className="mt-4 flex items-center gap-3">
                 <Waveform active={playing} speaker={lines.length ? lines[lines.length - 1].speaker : null} />
-                <div className="ml-auto flex items-center gap-1.5">
+                <div className="ml-auto flex shrink-0 items-center gap-1.5">
                   {[1, 2, 4].map((s) => (
                     <button key={s} onClick={() => setSpeed(s)} className={`rounded-md px-2 py-1 font-mono text-xs ${speed === s ? 'bg-cyan-400/15 text-cyan-200' : 'text-slate-400 hover:text-slate-200'}`}>{s}×</button>
                   ))}
@@ -209,7 +209,7 @@ export default function LiveCall() {
             {done && (
               <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mt-3 flex items-center justify-between rounded-xl bg-white/[0.04] px-4 py-3 text-sm ring-1 ring-white/10" data-testid="outcome">
                 <span className="text-slate-300">Actual outcome <Badge tone={OUTCOME[call.outcome].tone} className="ml-1">{OUTCOME[call.outcome].label}</Badge></span>
-                <span className="text-slate-300">Model said <b className="text-white">{pct(current.probability)}</b> {(current.probability >= MODEL.threshold) === (call.outcome === 'booked') ? <CheckCircle2 size={14} className="inline text-emerald-400" /> : <AlertTriangle size={14} className="inline text-amber-400" />}</span>
+                <span className="text-slate-300">Model said <b className="text-white">{current.probability < 0.01 ? "<1%" : pct(current.probability)}</b> {(current.probability >= MODEL.threshold) === (call.outcome === 'booked') ? <CheckCircle2 size={14} className="inline text-emerald-400" /> : <AlertTriangle size={14} className="inline text-amber-400" />}</span>
               </motion.div>
             )}
           </AnimatePresence>
@@ -240,7 +240,7 @@ export default function LiveCall() {
       </div>
 
       {/* ---------------- Intelligence panel ---------------- */}
-      <div className="space-y-4 xl:col-span-4">
+      <div className="order-2 min-w-0 space-y-4 xl:order-none xl:col-span-4">
         <Card title="Purchase likelihood" icon={<Zap size={14} />} right={<Badge tone="cyan">In-browser model</Badge>}>
           <Gauge value={current.probability} threshold={MODEL.threshold} />
           <div className="mt-2 flex items-center justify-center gap-3 text-xs text-slate-400">
@@ -255,7 +255,8 @@ export default function LiveCall() {
           </div>
           <div className="mt-4 border-t border-white/5 pt-3">
             <div className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Why this score</div>
-            <div className="space-y-1.5" data-testid="factors">
+            {current.evidence === 0 && <div className="rounded-xl border border-dashed border-white/10 py-5 text-center text-xs text-slate-500">Score starts at the base rate. Factors appear as soon as the buyer speaks.</div>}
+            <div className={`space-y-1.5 ${current.evidence === 0 ? 'hidden' : ''}`} data-testid="factors">
               {current.contributions.slice(0, 6).map((c) => {
                 const w = Math.min(100, Math.abs(c.contribution) * 55)
                 return (
